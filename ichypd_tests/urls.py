@@ -18,4 +18,9 @@ urlpatterns = patterns('',
     url(r'^confirmation-has-no-model-form/confirmation/$', 'ichypd.views.confirmation', {
         'template_name': 'ichypd_tests/personaldetails_form_confirmation.html',
     }),
+
+    # csv stuff
+    url(r'^csv-export/$', 'ichypd.views.csv_export', {
+        'model_form': PersonalDetailsForm,
+    }),
 )

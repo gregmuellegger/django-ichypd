@@ -32,6 +32,7 @@ class ViewTests(TestCase):
 
         response = self.client.get('/icanhas-data-plz/thankz/')
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.template.name, 'ichypd_tests/personaldetails_form_confirmation.html')
         self.assertEqual(response.context['object'], details)
 
     def test_confirmation_view_without_model_form_specified(self):
@@ -48,3 +49,27 @@ class ViewTests(TestCase):
         response = self.client.get('/confirmation-has-no-model-form/confirmation/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['object'], None)
+
+
+class CSVExportTests(TestCase):
+    def test_csv_view(self):
+        response = self.client.get('/csv-export/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, '')
+
+        PersonalDetails.objects.create(
+            first_name='Jack',
+            last_name='Lumber',
+            email='wood@example.com',
+            age=42)
+        PersonalDetails.objects.create(
+            first_name='Rodrigo',
+            last_name='Gonzales',
+            email='rodrigo@example.com',
+            age=28)
+        response = self.client.get('/csv-export/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, 
+            'Jack,Lumber,wood@example.com,42\r\n'
+            'Rodrigo,Gonzales,rodrigo@example.com,28\r\n'
+        )
