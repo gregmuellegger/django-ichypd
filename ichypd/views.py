@@ -68,4 +68,5 @@ def csv_export(request, queryset=None, model_form=None, fields=None):
         writer.writerow(data)
 
     content.seek(0)
+    content = unicode(content.read())
     return HttpResponse(content, content_type='text/csv')

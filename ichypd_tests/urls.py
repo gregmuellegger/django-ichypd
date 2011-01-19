@@ -1,6 +1,11 @@
 from django.conf.urls.defaults import *
+from django.contrib import admin
 from ichypd_tests.forms import PersonalDetailsForm
 from ichypd_tests.models import PersonalDetails
+
+
+admin.autodiscover()
+
 
 urlpatterns = patterns('',
     url(r'^icanhas-data-plz/$', 'ichypd.views.show_form', {
@@ -28,4 +33,7 @@ urlpatterns = patterns('',
         'queryset': PersonalDetails.objects.filter(age__gte=30),
         'fields': ('email', 'first_name', 'last_name', 'age'),
     }),
+
+    # admin
+    url(r'^admin/', include(admin.site.urls)),
 )

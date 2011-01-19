@@ -1,4 +1,5 @@
 from mock import Mock
+from django.contrib.auth.models import User
 from django.test import TestCase
 from ichypd_tests.forms import PersonalDetailsForm
 from ichypd_tests.models import PersonalDetails
@@ -71,7 +72,7 @@ class CSVExportTests(TestCase):
         response = self.client.get('/csv-export/from-model-form/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'text/csv')
-        self.assertEqual(response.content, 
+        self.assertEqual(response.content,
             'Jack,Lumber,wood@example.com,42\r\n'
             'Rodrigo,Gonzales,rodrigo@example.com,28\r\n'
         )
@@ -100,7 +101,45 @@ class CSVExportTests(TestCase):
         response = self.client.get('/csv-export/queryset/above-30/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'text/csv')
-        self.assertEqual(response.content, 
+        self.assertEqual(response.content,
             'wood@example.com,Jack,Lumber,42\r\n'
             'lolo@example.com,Lolo,Fernandez,35\r\n'
+        )
+
+
+class AdminIntegrationTests(TestCase):
+    def setUp(self):
+        self.user = User(
+            username='foo',
+            email='foo@example.com',
+            is_staff=True,
+            is_superuser=True)
+        self.user.set_password('bar')
+        self.user.save()
+
+    def test_admin_csv_export(self):
+        self.client.login(username='foo', password='bar')
+
+        PersonalDetails.objects.create(
+            first_name='Jack',
+            last_name='Lumber',
+            email='wood@example.com',
+            age=42)
+        PersonalDetails.objects.create(
+            first_name='Rodrigo',
+            last_name='Gonzales',
+            email='rodrigo@example.com',
+            age=28)
+        PersonalDetails.objects.create(
+            first_name='Lolo',
+            last_name='Fernandez',
+            email='lolo@example.com',
+            age=35)
+        response = self.client.get('/admin/ichypd_tests/personaldetails/export/csv/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/csv')
+        self.assertEqual(response.content,
+            'Jack,Lumber,42,wood@example.com\r\n'
+            'Rodrigo,Gonzales,28,rodrigo@example.com\r\n'
+            'Lolo,Fernandez,35,lolo@example.com\r\n'
         )
