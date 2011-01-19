@@ -46,15 +46,25 @@ def confirmation(request, model_form=None, template_name=None):
     }, context_instance=RequestContext(request))
 
 
-def csv_export(request, model_form):
-    model = model_form._meta.model
-    queryset = model._default_manager.all()
+def csv_export(request, queryset=None, model_form=None, fields=None):
+    assert queryset is not None or model_form is not None
+    if queryset is not None:
+        model = queryset.model
+        if fields is None:
+            fields = [field.name for field in model._meta.fields]
+    elif model_form is not None:
+        model = model_form._meta.model
+        queryset = model._default_manager.all()
+        if fields is None:
+            fields = model_form.base_fields.keys()
 
     content = StringIO()
     writer = csv.writer(content)
 
-    for obj in queryset:
-        data = [getattr(obj, field) for field in model_form.base_fields.keys()]
+    for obj in queryset.all():
+        data = []
+        for field in fields:
+            data.append(getattr(obj, field))
         writer.writerow(data)
 
     content.seek(0)

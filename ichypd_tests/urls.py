@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from ichypd_tests.forms import PersonalDetailsForm
+from ichypd_tests.models import PersonalDetails
 
 urlpatterns = patterns('',
     url(r'^icanhas-data-plz/$', 'ichypd.views.show_form', {
@@ -20,7 +21,11 @@ urlpatterns = patterns('',
     }),
 
     # csv stuff
-    url(r'^csv-export/$', 'ichypd.views.csv_export', {
+    url(r'^csv-export/from-model-form/$', 'ichypd.views.csv_export', {
         'model_form': PersonalDetailsForm,
+    }),
+    url(r'^csv-export/queryset/above-30/$', 'ichypd.views.csv_export', {
+        'queryset': PersonalDetails.objects.filter(age__gte=30),
+        'fields': ('email', 'first_name', 'last_name', 'age'),
     }),
 )
