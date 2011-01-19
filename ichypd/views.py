@@ -68,4 +68,4 @@ def csv_export(request, queryset=None, model_form=None, fields=None):
         writer.writerow(data)
 
     content.seek(0)
-    return HttpResponse(content)
+    return HttpResponse(content, content_type='text/csv')
