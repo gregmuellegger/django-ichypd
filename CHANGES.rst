@@ -1,6 +1,11 @@
 Changlog
 ========
 
+0.2.1
+-----
+
+* Fixing packaging issue - sdist package didn't include the templates off the app.
+
 0.2.0
 -----
 
