@@ -32,7 +32,7 @@ long_description = UltraMagicString(u'\n\n'.join((
 
 setup(
     name = 'django-ichypd',
-    version = '0.1.0',
+    version = '0.2.0',
     url = 'https://github.com/gregmuellegger/django-ichypd',
     license = 'BSD',
     description = '',
