@@ -46,7 +46,8 @@ def confirmation(request, model_form=None, template_name=None):
     }, context_instance=RequestContext(request))
 
 
-def csv_export(request, queryset=None, model_form=None, fields=None):
+def csv_export(request, queryset=None, model_form=None, fields=None,
+    filename='export.csv'):
     assert queryset is not None or model_form is not None
     if queryset is not None:
         model = queryset.model
@@ -69,4 +70,6 @@ def csv_export(request, queryset=None, model_form=None, fields=None):
 
     content.seek(0)
     content = unicode(content.read())
-    return HttpResponse(content, content_type='text/csv')
+    response = HttpResponse(content, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    return response

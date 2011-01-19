@@ -1,4 +1,4 @@
-from mock import Mock
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.test import TestCase
 from ichypd_tests.forms import PersonalDetailsForm
@@ -106,6 +106,17 @@ class CSVExportTests(TestCase):
             'lolo@example.com,Lolo,Fernandez,35\r\n'
         )
 
+    def test_custom_filename(self):
+        response = self.client.get('/csv-export/myfilename.csv')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/csv')
+        self.assertEqual(response['Content-Disposition'], 'attachment; filename=myfilename.csv')
+
+        response = self.client.get('/csv-export/your_filename/strange')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/csv')
+        self.assertEqual(response['Content-Disposition'], 'attachment; filename=your_filename/strange')
+
 
 class AdminIntegrationTests(TestCase):
     def setUp(self):
@@ -138,6 +149,9 @@ class AdminIntegrationTests(TestCase):
         response = self.client.get('/admin/ichypd_tests/personaldetails/export/csv/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'text/csv')
+        self.assertEqual(response['Content-Disposition'],
+            'attachment; filename=personaldetails_export_%s.csv' % (
+                datetime.now().strftime('%Y-%m-%d')))
         self.assertEqual(response.content,
             'Jack,Lumber,42,wood@example.com\r\n'
             'Rodrigo,Gonzales,28,rodrigo@example.com\r\n'

@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib import admin
 from django.utils.functional import update_wrapper
 from ichypd.views import csv_export
@@ -31,4 +32,11 @@ class CSVExportAdmin(admin.ModelAdmin):
             fields = self.list_display
             if fields[0] == 'action_checkbox':
                 fields = fields[1:]
-        return csv_export(request, queryset=queryset, fields=fields)
+        filename = '%s_export_%s.csv' % (
+            self.model._meta.object_name.lower(),
+            datetime.now().strftime('%Y-%m-%d'))
+        return csv_export(
+            request,
+            queryset=queryset,
+            fields=fields,
+            filename=filename)

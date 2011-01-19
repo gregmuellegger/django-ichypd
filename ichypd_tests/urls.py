@@ -34,6 +34,10 @@ urlpatterns = patterns('',
         'fields': ('email', 'first_name', 'last_name', 'age'),
     }),
 
+    url(r'^csv-export/(?P<filename>.+)$', 'ichypd.views.csv_export', {
+        'model_form': PersonalDetailsForm,
+    }),
+
     # admin
     url(r'^admin/', include(admin.site.urls)),
 )
