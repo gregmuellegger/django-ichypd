@@ -5,6 +5,7 @@ from ichypd.views import csv_export
 
 
 class CSVExportAdmin(admin.ModelAdmin):
+    change_list_template = 'ichypd/admin/csv_export_change_list.html'
     export_fields = None
 
     def get_urls(self):
